@@ -35,6 +35,9 @@ namespace CustomLoadouts
 		internal HashSet<string> spawning = new HashSet<string>();
 		private bool verbose;
 		internal int delay = 1000;
+		private Dictionary<JToken, long> dictCooldown = new Dictionary<JToken, long>();
+		private Dictionary<JToken, byte> dictCount = new Dictionary<JToken, byte>();
+
 
 		public override void OnDisable()
 		{
@@ -92,11 +95,14 @@ namespace CustomLoadouts
 			delay = json.SelectToken("delay").Value<int>();
 
 			loadouts = json.SelectToken("customloadouts").Value<JObject>();
+
+			// Dictionary to get the cooldowns to not respawn multiple unique subclasses
 			this.Info("Config loaded.");
 		}
 
 		public void GiveItems(JToken roleLoadouts, Player player)
 		{
+			
 			foreach (JObject itemGroupNode in roleLoadouts.Children())
 			{
 				// Converts the JObject to key/value pair
@@ -115,12 +121,28 @@ namespace CustomLoadouts
 						{
 							this.Info(itemGroupNode.Path + ": Succeded random chance. " + chance + " >= " + d100);
 						}
-
-						// Gives all items in the item bundle to the player
-						foreach (string itemName in itemGroup.Value as JArray)
+						
+						foreach (JToken jToken in itemGroup.Value as JArray)
 						{
-							switch (itemName.ToUpper())
+							string itemName = jToken.First.ToString().ToUpper();
+							switch (itemName)
 							{
+								case "MAX":
+									try
+									{
+										// unfinished, also I don't know why that doesn't have a contains, maybe use the hash?
+										if (!dictCount.Contains<JToken>(jToken)) jToken.Value<int>();
+									}
+									catch (Exception e)
+									{
+										this.Error("Error while setting the maximum value for " + player + ".");
+										if (debug)
+										{
+											this.Error(e.ToString());
+										}
+									}
+									break;
+								// Gives all items in the item bundle to the player
 								case "REMOVEAMMO":
 									// Deletes the existing ammo if set in the config
 									try

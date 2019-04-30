@@ -34,6 +34,21 @@ customloadouts:
                 - DROPPED_9
                 - MAJOR_SCIENTIST_KEYCARD
                 - MEDKIT
+        NTF_CADET:
+            - 20:
+                - MAX: 1
+                - COOLDOWN: 30
+                - MEDKIT
+                - MEDKIT
+            - 10:
+                - MAX: 1
+                - COOLDOWN: 30
+                - REMOVEITEMS
+                - NTF_LIEUTENANT_KEYCARD
+                - P90
+                - RADIO
+                - MEDKIT
+                - DISARMER
     moderatorloadouts:
         CLASSD:
             - 30:
